@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NaveController : MonoBehaviour
 {
@@ -9,6 +11,9 @@ public class NaveController : MonoBehaviour
 
     [SerializeField] private int balasEspeciales = 5;
     [SerializeField] private float anguloTotal = 60f;
+
+    private int puntaje;
+    [SerializeField] private TMP_Text puntajeText;
 
     private Controles controles;
     private Rigidbody2D rb;
@@ -46,6 +51,7 @@ public class NaveController : MonoBehaviour
     {
         GameObject bala = Instantiate(balaPrefab, puntoDisparo.position, puntoDisparo.rotation);
         bala.GetComponent<Rigidbody2D>().linearVelocity = transform.up * velocidadBala;
+        bala.GetComponent<Bala>().AsignarJugador(this);
         Destroy(bala, 3f);
     }
 
@@ -60,7 +66,24 @@ public class NaveController : MonoBehaviour
             Quaternion rotacion = puntoDisparo.rotation * Quaternion.Euler(0, 0, angulo);
             GameObject bala = Instantiate(balaPrefab, puntoDisparo.position, rotacion);
             bala.GetComponent<Rigidbody2D>().linearVelocity = rotacion * Vector2.up * velocidadBala;
+            bala.GetComponent<Bala>().AsignarJugador(this);
             Destroy(bala, 3f);
         }
     }
+
+    public void ActualizarPuntaje(int nuevoPuntaje)
+    {
+        puntaje += 1;
+        puntajeText.text = $"Puntaje: {puntaje}";
+    }
+
+    // Game over
+    private void OnTriggerEnter2D(Collider2D otro)
+    {
+        if (otro.CompareTag("Enemigo"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+
 }
